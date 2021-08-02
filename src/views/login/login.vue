@@ -1,5 +1,11 @@
 <template>
   <div id="login">
+    <transition name="islogin">
+      <div id="war_y" v-show="islogin_y"><p>登录成功</p></div>
+    </transition>
+    <transition name="islogin">
+      <div id="war_n" v-show="islogin_n"><p>登录失败</p></div>
+    </transition>
     <el-form ref="form" :model="user" id="login_box">
       <div id="log">
         <div id="logo"></div>
@@ -7,15 +13,28 @@
       </div>
 
       <el-form-item>
-        <el-input v-model="user.tel" placeholder="请输入联系电话"></el-input>
+        <el-input
+          ref="tels"
+          v-model="user.mobile"
+          placeholder="请输入联系电话"
+          @focus="verify_tel_ent"
+          @blur="verify_tel_leave"
+        ></el-input>
+        <p class="tooltip" ref="tel_p">
+          {{ info.tel_p }}
+        </p>
       </el-form-item>
 
       <el-form-item>
         <el-input
+          ref="codes"
           type="text"
           v-model="user.code"
           placeholder="请输入验证码"
+          @focus="verify_code_ent"
+          @blur="verify_code_leave"
         ></el-input>
+        <p class="tooltip" ref="code_p">{{ info.code_p }}</p>
       </el-form-item>
 
       <div id="deal">
@@ -24,8 +43,12 @@
       </div>
 
       <el-form-item>
-        <el-button type="primary" @click="onSubmit" id="btn_login"
-          >登录</el-button
+        <el-button
+          type="primary"
+          @click="onSubmit"
+          id="btn_login"
+          :disabled="isbutton"
+          >{{ button_status }}</el-button
         >
       </el-form-item>
     </el-form>
@@ -35,21 +58,123 @@
   
 
 <script>
+import request from "@/utils/request.js";
 export default {
   name: "login",
   data() {
     return {
       user: {
-        tel: "",
+        // 电话
+        mobile: "",
+        // 验证码
         code: "",
       },
+
+      // 状态信息
+      // 协议选中状态
       isCheck_deal: false,
+      // 登录成功状态
+      islogin_y: false,
+      islogin_n: false,
+      // 登录按钮信息
+      button_status: "登录",
+      // 按钮禁用状态
+      isbutton: false,
+
+      info: {
+        tel_p: "",
+        code_p: "",
+      },
     };
   },
 
   methods: {
+    // 登录的ajax请求方法
     onSubmit() {
-      console.log("submit!");
+      // 点击登陆更改按钮状态
+      this.isbutton = true;
+      this.button_status = "登录中······";
+      // 获取表单数据
+      const user = JSON.stringify(this.user);
+      // 发送请求
+      request({
+        // 请求方法
+        method: "POST",
+        url: "/api?version=v1&appid=23035354&appsecret=8YvlPNrz",
+        // 设置请求体
+        data: user,
+
+        // Headers: { "Content-Type": "application/json" },
+      })
+        // 成功回调
+        .then((data) => {
+          console.log(data);
+          // 提示成功登录状态
+          this.islogin_y = true;
+          // 提示成功按钮状态
+          this.isbutton = false;
+          this.button_status = "登录";
+        })
+        // 失败回调
+        .catch((err) => {
+          console.log("请求失败了" + err);
+          // 提示失败登录状态
+          this.islogin_n = true;
+          // 提示失败按钮状态
+          this.button_status = "登录";
+          this.isbutton = false;
+        });
+
+      // 3s后解除登录信息提示
+      setTimeout(() => {
+        this.islogin_y = false;
+        this.islogin_n = false;
+      }, 3000);
+    },
+
+    // 表单验证方法
+    // tel
+    // 选中
+    verify_tel_ent() {
+      if (this.user.mobile == "") {
+        this.$refs.tels.$refs.input.style.borderColor = "yellow";
+        this.$refs.tel_p.style.color = "yellow";
+        this.info.tel_p = "输入电话";
+      }
+    },
+    // 失去
+    verify_tel_leave() {
+      if (this.user.mobile == "456") {
+        this.$refs.tels.$refs.input.style.borderColor = "green";
+        this.$refs.tel_p.style.color = "green";
+        this.info.tel_p = "格式正确";
+      } else {
+        this.$refs.tels.$refs.input.style.borderColor = "red";
+        this.$refs.tel_p.style.color = "red";
+        this.info.tel_p = "！！！输入正确格式的电话";
+      }
+    },
+
+    // code
+    // 选中
+    verify_code_ent() {
+      if (this.user.mobile == "") {
+        this.$refs.codes.$refs.input.style.borderColor = "yellow";
+        this.$refs.code_p.style.color = "yellow";
+        this.info.code_p = "输入验证码";
+      }
+    },
+    // 失去
+    verify_code_leave() {
+      if (this.user.code == "456") {
+        this.$refs.codes.$refs.input.style.borderColor = "green";
+        this.$refs.code_p.style.color = "green";
+        this.info.code_p = "验证码格式正确";
+      } else {
+        this.$refs.codes.$refs.input.style.borderColor = "red";
+        this.$refs.code_p.style.color = "red";
+        this.info.code_p = "！！！输入正确格式的验证码";
+      }
     },
   },
 };
@@ -108,5 +233,68 @@ export default {
       width: 100%;
     }
   }
+
+  // 登录状态
+  #war_y {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 10%;
+    width: 15%;
+    height: 40px;
+    background-color: #79ed66;
+    font-size: 25px;
+    text-align: center;
+    line-height: 40px;
+    color: #fff;
+    border-radius: 5px;
+  }
+
+  #war_n {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 10%;
+    width: 15%;
+    height: 40px;
+    font-size: 25px;
+    background-color: red;
+    text-align: center;
+    line-height: 40px;
+    color: #fff;
+    border-radius: 5px;
+  }
+
+  @keyframes show {
+    0% {
+      opacity: 0.1;
+      top: 6%;
+    }
+    100% {
+      opacity: 1;
+      top: 10%;
+    }
+  }
+
+  @keyframes show_l {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  .islogin-enter-active {
+    animation: show 2s;
+  }
+  .islogin-leave-active {
+    animation: show_l 2s;
+  }
+}
+.tooltip {
+  width: 100%;
+  height: 15px;
+  font-weight: 700;
 }
 </style>
