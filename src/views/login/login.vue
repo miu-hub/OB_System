@@ -58,16 +58,17 @@
   
 
 <script>
-import request from "@/utils/request.js";
+// 使用解构
+import { login } from "@/apis/user";
 export default {
   name: "login",
   data() {
     return {
       user: {
         // 电话
-        mobile: "",
+        mobile: "13911111111",
         // 验证码
-        code: "",
+        code: "246810",
       },
 
       // 状态信息
@@ -80,7 +81,7 @@ export default {
       button_status: "登录",
       // 按钮禁用状态
       isbutton: false,
-
+      // 验证提示信息
       info: {
         tel_p: "",
         code_p: "",
@@ -101,18 +102,8 @@ export default {
           this.button_status = "登录中······";
           // 获取表单数据
           // const user = JSON.stringify(this.user);
-          // 发送请求
-          request({
-            // 请求方法
-            method: "POST",
-            url: "/mp/v1_0/authorizations",
-            // 设置请求体
-            data: this.user,
-
-            // Headers: {
-            //   "Content-Type": "application/json",
-            // },
-          })
+          // 发送请求------使用apis中的文件
+          login(this.user)
             // 成功回调
             .then((data) => {
               console.log(data);
@@ -121,6 +112,11 @@ export default {
               // 提示成功按钮状态
               this.isbutton = false;
               this.button_status = "登录";
+
+              // 点击登录后会跳转到首页
+              this.$router.push({
+                name: "index",
+              });
             })
             // 失败回调
             .catch((err) => {
