@@ -91,45 +91,62 @@ export default {
   methods: {
     // 登录的ajax请求方法
     onSubmit() {
-      // 点击登陆更改按钮状态
-      this.isbutton = true;
-      this.button_status = "登录中······";
-      // 获取表单数据
-      const user = JSON.stringify(this.user);
-      // 发送请求
-      request({
-        // 请求方法
-        method: "POST",
-        url: "/api?version=v1&appid=23035354&appsecret=8YvlPNrz",
-        // 设置请求体
-        data: user,
+      // 表单验证
+      let test_tel = this.user.mobile;
+      let test_code = this.user.code;
+      if (test_tel != "" && test_code != "") {
+        if (this.isCheck_deal) {
+          // 点击登陆更改按钮状态
+          this.isbutton = true;
+          this.button_status = "登录中······";
+          // 获取表单数据
+          // const user = JSON.stringify(this.user);
+          // 发送请求
+          request({
+            // 请求方法
+            method: "POST",
+            url: "/mp/v1_0/authorizations",
+            // 设置请求体
+            data: this.user,
 
-        // Headers: { "Content-Type": "application/json" },
-      })
-        // 成功回调
-        .then((data) => {
-          console.log(data);
-          // 提示成功登录状态
-          this.islogin_y = true;
-          // 提示成功按钮状态
-          this.isbutton = false;
-          this.button_status = "登录";
-        })
-        // 失败回调
-        .catch((err) => {
-          console.log("请求失败了" + err);
-          // 提示失败登录状态
-          this.islogin_n = true;
-          // 提示失败按钮状态
-          this.button_status = "登录";
-          this.isbutton = false;
-        });
+            // Headers: {
+            //   "Content-Type": "application/json",
+            // },
+          })
+            // 成功回调
+            .then((data) => {
+              console.log(data);
+              // 提示成功登录状态
+              this.islogin_y = true;
+              // 提示成功按钮状态
+              this.isbutton = false;
+              this.button_status = "登录";
+            })
+            // 失败回调
+            .catch((err) => {
+              console.log("请求失败了" + err);
+              // 提示失败登录状态
+              this.islogin_n = true;
+              // 提示失败按钮状态
+              this.button_status = "登录";
+              this.isbutton = false;
+              alert("账号或验证码错误");
+            });
 
-      // 3s后解除登录信息提示
-      setTimeout(() => {
-        this.islogin_y = false;
-        this.islogin_n = false;
-      }, 3000);
+          // 3s后解除登录信息提示
+          setTimeout(() => {
+            this.islogin_y = false;
+            this.islogin_n = false;
+          }, 3000);
+        } else {
+          //未勾选
+          alert("请先勾选协议");
+          return;
+        }
+      } else {
+        alert("未输入完整信息");
+        return;
+      }
     },
 
     // 表单验证方法
@@ -144,14 +161,24 @@ export default {
     },
     // 失去
     verify_tel_leave() {
-      if (this.user.mobile == "456") {
+      // 配置电话的正则规则
+      let gz = /^1[34578]\d{9}$/;
+      let tel = this.user.mobile.trim();
+      if (gz.test(tel)) {
         this.$refs.tels.$refs.input.style.borderColor = "green";
         this.$refs.tel_p.style.color = "green";
         this.info.tel_p = "格式正确";
+        this.isbutton = false;
+      } else if (tel === "") {
+        this.info.tel_p = "输入不能为空";
+        this.$refs.tels.$refs.input.style.borderColor = "red";
+        this.$refs.tel_p.style.color = "red";
+        this.user.mobile = "";
       } else {
         this.$refs.tels.$refs.input.style.borderColor = "red";
         this.$refs.tel_p.style.color = "red";
         this.info.tel_p = "！！！输入正确格式的电话";
+        this.isbutton = true;
       }
     },
 
@@ -166,14 +193,25 @@ export default {
     },
     // 失去
     verify_code_leave() {
-      if (this.user.code == "456") {
+      // 验证码正则规则
+      let code_test = /^\d{6}$/;
+      // 将用户输入的验证码去除空格
+      let code = this.user.code.trim();
+      if (code_test.test(code)) {
         this.$refs.codes.$refs.input.style.borderColor = "green";
         this.$refs.code_p.style.color = "green";
         this.info.code_p = "验证码格式正确";
+        this.isbutton = false;
+      } else if (code === "") {
+        this.info.code_p = "输入不能为空";
+        this.$refs.codes.$refs.input.style.borderColor = "red";
+        this.$refs.code_p.style.color = "red";
+        this.user.code = "";
       } else {
         this.$refs.codes.$refs.input.style.borderColor = "red";
         this.$refs.code_p.style.color = "red";
         this.info.code_p = "！！！输入正确格式的验证码";
+        this.isbutton = true;
       }
     },
   },

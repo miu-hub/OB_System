@@ -7,5 +7,5 @@ import axios from 'axios'
 // // 我们通过这个实例来发送请求，需要的配置配置给这个实例
 // // baseURL: '',请求的基本路径
 export default axios.create({
-    baseURL: 'http://www.tianqiapi.com'
+    baseURL: 'http://api-toutiao-web.itheima.net'
 })
