@@ -41,10 +41,16 @@
 
         <!-- 用户信息区 -->
         <div id="user_info">
-          <div id="head_port"></div>
+          <div id="head_port">
+            <!-- 从接口处获得头像信息 -->
+            <img src="./demo_head.jpg" alt="" v-show="false" />
+            <img :src="user.photo" alt="" v-show="true" />
+          </div>
           &nbsp;&nbsp;
           <!-- 跳转方法 -->
-          <p @click="push">未登录</p>
+          <!-- 从接口处获得用户明信息--------！！！未实现判断动态展示数据 -->
+          <p @click="push" v-show="false">未登录</p>
+          <p @click="push" v-show="true">{{ user.name }}</p>
           &nbsp;&nbsp;
           <i class="iconfont icon-linecar105"></i>
         </div>
@@ -59,6 +65,8 @@
 </template>
 
 <script>
+// 引入axios中的用户信息
+import { user_info } from "@/apis/user";
 export default {
   name: "layout",
 
@@ -108,7 +116,15 @@ export default {
           isclick: false,
         },
       ],
+
+      // 用户信息
+      user: {},
     };
+  },
+
+  // 在组件构建完整时接发送一次get请求
+  created() {
+    this.getUserInfo();
   },
 
   methods: {
@@ -131,6 +147,17 @@ export default {
       this.$router.push({
         name: "login",
       });
+    },
+
+    //请求用户信息方法
+    getUserInfo() {
+      user_info()
+        .then((data) => {
+          this.user = data.data.data;
+        })
+        .catch((err) => {
+          console.log("出错了" + err);
+        });
     },
   },
 };
@@ -266,12 +293,13 @@ export default {
           width: 50px;
           height: 50px;
           cursor: pointer;
-          border: 1px solid #666;
-          border-radius: 50%;
-          background-color: #666;
-          background-image: url("../index/user_header.jpg");
-          background-repeat: no-repeat;
-          background-size: cover;
+
+          img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 1px solid #666;
+          }
         }
 
         // 下拉用户信息

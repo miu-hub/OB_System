@@ -3,15 +3,15 @@ import VueRouter from 'vue-router'
 
 // 引入组件
 import login from '../views/login/login.vue'
-import index from '../views/index/index.vue'
+import index from '../components/index/index.vue'
 import layout from '../views/layout/layout.vue'
 
-import conest from '../views/index/conest.vue'
-import comment from '../views/index/comment.vue'
-import fans from '../views/index/fans.vue'
-import issue from '../views/index/issue.vue'
-import matter from '../views/index/matter.vue'
-import user from '../views/index/user.vue'
+import conest from '../components/conest/conest.vue'
+import comment from '../components/comment/comment.vue'
+import fans from '../components/fans/fans.vue'
+import issue from '../components/issue/issue.vue'
+import matter from '../components/matter/matter.vue'
+import user from '../components/user/user.vue'
 
 Vue.use(VueRouter)
 

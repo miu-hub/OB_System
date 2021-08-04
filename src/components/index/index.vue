@@ -17,7 +17,7 @@ export default {
   padding: 5% 5%;
   height: 100%;
   background-color: #000;
-  background-image: url("../index/index_bg.jpg");
+  background-image: url("./index_bg.jpg");
 
   #main {
     width: 100%;
