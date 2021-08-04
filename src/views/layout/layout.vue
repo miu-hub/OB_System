@@ -52,7 +52,15 @@
           <p @click="push" v-show="is_true">未登录</p>
           <p v-show="is_false">{{ user.name }}</p>
           &nbsp;&nbsp;
-          <i class="iconfont icon-linecar105"></i>
+          <i class="iconfont icon-linecar105" @click="user_f = !user_f"></i>
+
+          <!-- 用户功能区 -->
+          <div id="user_facility" v-show="user_f">
+            <ul>
+              <li>13256</li>
+              <li>退出登录</li>
+            </ul>
+          </div>
         </div>
       </div>
 
@@ -120,6 +128,9 @@ export default {
       // 用户信息
       user: {},
 
+      // 用户下拉功能
+      user_f: false,
+
       // 登录状态
       is_true: true,
       is_false: false,
@@ -156,7 +167,15 @@ export default {
     //请求用户信息方法
     getUserInfo() {
       // 在首页用户信息处使用vuex中的用户令牌
-      let token = this.$store.state.token;
+      let tokens = this.$store.state.token;
+
+      // 将数据通过本地存储来避免因为刷新首页而导致的用户信息缺失
+      if (tokens) {
+        localStorage.setItem("token", tokens);
+      }
+      // 获取用户令牌
+      let token = localStorage.getItem("token");
+
       user_info(token)
         // 请求成功则值渲染
         .then((data) => {
@@ -170,6 +189,9 @@ export default {
           this.is_false = false;
         });
     },
+
+    // 用户点击功能
+    user_facility() {},
   },
 };
 </script>
@@ -293,6 +315,7 @@ export default {
 
       // 用户信息
       #user_info {
+        position: relative;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -319,6 +342,39 @@ export default {
           font-size: 20px;
           cursor: pointer;
           color: #666;
+        }
+
+        // 用户下拉设置
+        #user_facility {
+          position: absolute;
+          left: 40%;
+          top: 100%;
+          width: 40%;
+          height: 100%;
+          background-color: #fff;
+
+          ul {
+            width: 100%;
+            height: 100%;
+            border: 1px solid #ccc;
+            li {
+              width: 100%;
+              height: 50%;
+              border: 0;
+              color: #666;
+              text-align: center;
+              line-height: 42px;
+              cursor: pointer;
+              &:last-child {
+                border-top: 1px solid #000;
+              }
+            }
+
+            li:hover {
+              background-color: #ccc;
+              color: blue;
+            }
+          }
         }
       }
     }

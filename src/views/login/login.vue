@@ -120,9 +120,11 @@ export default {
               this.isbutton = false;
               this.button_status = "登录";
               // 点击登录后会跳转到首页
-              this.$router.push({
-                name: "index",
-              });
+              setTimeout(() => {
+                this.$router.push({
+                  name: "index",
+                });
+              }, 1000);
             })
             // 失败回调
             .catch((err) => {
@@ -326,10 +328,10 @@ export default {
   }
 
   .islogin-enter-active {
-    animation: show 2s;
+    animation: show 1s;
   }
   .islogin-leave-active {
-    animation: show_l 2s;
+    animation: show_l 1s;
   }
 }
 .tooltip {
