@@ -43,14 +43,14 @@
         <div id="user_info">
           <div id="head_port">
             <!-- 从接口处获得头像信息 -->
-            <img src="./demo_head.jpg" alt="" v-show="false" />
-            <img :src="user.photo" alt="" v-show="true" />
+            <img src="./demo_head.jpg" alt="" v-show="is_true" />
+            <img :src="user.photo" alt="" v-show="is_false" />
           </div>
           &nbsp;&nbsp;
           <!-- 跳转方法 -->
           <!-- 从接口处获得用户明信息--------！！！未实现判断动态展示数据 -->
-          <p @click="push" v-show="false">未登录</p>
-          <p @click="push" v-show="true">{{ user.name }}</p>
+          <p @click="push" v-show="is_true">未登录</p>
+          <p v-show="is_false">{{ user.name }}</p>
           &nbsp;&nbsp;
           <i class="iconfont icon-linecar105"></i>
         </div>
@@ -119,6 +119,10 @@ export default {
 
       // 用户信息
       user: {},
+
+      // 登录状态
+      is_true: true,
+      is_false: false,
     };
   },
 
@@ -151,12 +155,19 @@ export default {
 
     //请求用户信息方法
     getUserInfo() {
-      user_info()
+      // 在首页用户信息处使用vuex中的用户令牌
+      let token = this.$store.state.token;
+      user_info(token)
+        // 请求成功则值渲染
         .then((data) => {
+          this.is_true = false;
+          this.is_false = true;
           this.user = data.data.data;
         })
+        //请求失败时
         .catch((err) => {
-          console.log("出错了" + err);
+          this.is_true = true;
+          this.is_false = false;
         });
     },
   },

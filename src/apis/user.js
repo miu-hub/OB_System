@@ -16,7 +16,8 @@ export const login = (data) => {
 
 
 // 用户信息接口
-export const user_info = () => {
+export const user_info = (token) => {
+
     return request({
         method: 'GET',
         url: '/mp/v1_0/user/profile',
@@ -24,7 +25,7 @@ export const user_info = () => {
         // Authorization来设置用户令牌
         // 只有令牌正确才能获取接口中的信息
         headers: {
-            Authorization: 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NTk0OTUxNDAsInVzZXJfaWQiOjEsInJlZnJlc2giOmZhbHNlLCJ2ZXJpZmllZCI6dHJ1ZX0.08DZS1Po5Hg6Kn4bIw5MI_kJLo3A2Wa98qNE1xmXlJ8'
+            Authorization: `Bearer ${token}`
         }
     })
 }

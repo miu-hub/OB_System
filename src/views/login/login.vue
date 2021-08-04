@@ -106,13 +106,19 @@ export default {
           login(this.user)
             // 成功回调
             .then((data) => {
-              console.log(data);
+              let data_user = data.data.data;
+
+              // 通过全局事件总线获取用户token
+              // this.$bus.$emit("token_user", data_user);
+
+              // 使用Vuex来传递数据------commit直接联系mutations
+              // 将data_user直接返回给Vuex中
+              this.$store.commit("user_token", data_user);
               // 提示成功登录状态
               this.islogin_y = true;
               // 提示成功按钮状态
               this.isbutton = false;
               this.button_status = "登录";
-
               // 点击登录后会跳转到首页
               this.$router.push({
                 name: "index",
