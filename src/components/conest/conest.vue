@@ -93,7 +93,7 @@
     <!-- 目录部分 -->
     <div id="mulu">
       <!-- 筛选结果总数 -->
-      <p>已经过滤筛选出4444件符合条件的文章</p>
+      <p>已经过滤筛选出{{ total_count }}件符合条件的文章</p>
 
       <!-- 表格展示部分 -->
       <table>
@@ -111,14 +111,23 @@
         <tbody>
           <!-- 利用从接口获得的数据进行遍历 -->
           <tr v-for="item in articles" :key="item.id">
-            <!-- 图片文件----默认图片 -->
-            <td><img src="./780.jpg" alt="" id="img_r" /></td>
+            <td>
+              <img
+                :src="item.cover.images[0]"
+                alt=""
+                id="img_r"
+                v-if="item.cover.images[0]"
+              />
+
+              <!-- 图片文件----默认图片 -->
+              <img v-else src="./780.jpg" alt="" id="img_r" />
+            </td>
 
             <!-- 文章标题 -->
-            <td>{{ item.title }}</td>
+            <td class="wen_title">{{ item.title }}</td>
 
             <!-- 处理文章审核状态的展示 -->
-            <td>
+            <td class="status">
               <!-- 利用从接口处获得的文件状态码status来确定文章状态 -->
               <div v-if="item.status == 0" class="caogao">草稿</div>
               <div v-else-if="item.status == 3" class="sh_loging">审核中</div>
@@ -140,8 +149,15 @@
       </table>
 
       <!-- 模块底部跳转页功能----eleui -->
+      <!-- @current-change----当前页码发生改变时触发 -->
+      <!-- total_count文章总数 -->
       <div id="yema">
-        <el-pagination background layout="prev, pager, next" :total="1000">
+        <el-pagination
+          background
+          layout="prev, pager, next"
+          :total="total_count"
+          @current-change="yema"
+        >
         </el-pagination>
       </div>
     </div>
@@ -160,6 +176,10 @@ export default {
       // 时间参数
       value1: "",
       value2: "",
+      // 当前页码
+      time_li: 1,
+      // 文章总数
+      total_count: 0,
     };
   },
 
@@ -174,16 +194,27 @@ export default {
       // 从本地获取用户令牌
       let tokens = localStorage.getItem("token");
 
-      // 调用请求方法---将用户令牌传递
-      articles(tokens)
+      // 调用请求方法---将用户令牌传递-----将接口参数传递
+      articles(tokens, {
+        page: this.time_li, //处理在第几页
+        per_page: 20, //处理一页包含多少数据
+      })
         .then((data) => {
-          // console.log(data.data.data.results);
+          let datas = data.data.data;
           // 获取成功请求返回的数据并赋值给data中的数据
-          this.articles = data.data.data.results;
+          this.articles = datas.results;
+          //将获取的文章总数赋值total_count
+          this.total_count = datas.total_count * 10;
         })
         .catch((err) => {
           console.log(err);
         });
+    },
+
+    // 页码改变
+    yema(val) {
+      this.time_li = val;
+      this.articles_updata();
     },
   },
 };
@@ -235,6 +266,8 @@ export default {
       display: flex;
       flex-direction: column;
       justify-content: space-evenly;
+
+      border-bottom: 1px solid #666;
 
       // 单选文章筛选状态
       #radio {
@@ -304,14 +337,13 @@ export default {
     overflow: auto;
     width: 90%;
     height: 480px;
-    margin-top: 10px;
     background-color: #fff;
 
     p {
-      height: 30px;
+      height: 50px;
       text-align: center;
-      line-height: 30px;
-      font-size: 20px;
+      line-height: 50px;
+      font-size: 30px;
       font-weight: 700;
       font-family: "KaiTi";
       margin-left: 20px;
@@ -327,6 +359,7 @@ export default {
         height: 40px;
         background-color: #fff;
         td {
+          // width: 100px;
           text-align: center;
         }
       }
@@ -334,8 +367,17 @@ export default {
       tbody {
         width: 100%;
         border-top: 1px solid #ccc;
+        // 状态栏样式
+        .status {
+          width: 120px;
+        }
+        // 标题样式
+        .wen_title {
+          width: 500px;
+          padding: 0px 20px;
+        }
+
         td {
-          padding-left: 20px;
           height: 180px;
           text-align: center;
           border: 1px solid #ccc;

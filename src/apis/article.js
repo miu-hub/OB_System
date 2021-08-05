@@ -5,7 +5,7 @@
 // 获取请求模块
 import request from '../utils/request'
 // 暴露获取文章信息接口
-export const articles = (token) => {
+export const articles = (token, params) => {
 
     return request({
         // 请求方式
@@ -16,7 +16,10 @@ export const articles = (token) => {
         headers: {
             // 用户令牌
             Authorization: `Bearer ${token}`
-        }
+        },
+
+        // params----get方法的配置要求------可传递给服务器
+        params,
     })
 
 
