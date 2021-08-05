@@ -148,7 +148,7 @@ export default {
   // 在组件构建完整时接发送一次get请求
   created() {
     this.getUserInfo();
-    this.$router.push("/");
+    // this.$router.push("/");
   },
 
   methods: {
