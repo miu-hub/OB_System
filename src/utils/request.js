@@ -17,7 +17,7 @@ request.interceptors.request.use(
     // 成功的请求会经过这个方法
     function (config) {
         // config可以获取到请求的详细返回体
-        console.log(config.headers.Authorization);
+        // console.log(config.headers.Authorization);
         // 利用请求拦截器可以将所用请求添加上用户令牌
         // return可以控制请求是否被拦截------没有return则会终止请求
         return config;

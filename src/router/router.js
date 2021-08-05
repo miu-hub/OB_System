@@ -64,4 +64,17 @@ const router = new VueRouter({
   routes
 })
 
+router.beforeEach((to, from, next) => {
+
+  let user = localStorage.getItem('token');
+  if (!user) {
+    if (to.path == '/' || to.path == '/login') {
+      next()
+    } else {
+      alert('未登录用户无权限查看此项！---请先登录');
+    }
+  } else {
+    next();
+  }
+});
 export default router

@@ -1,11 +1,11 @@
 <template>
   <div id="root">
     <!-- 左侧导航 -->
-    <div id="side_nav">
+    <div id="side_nav" ref="l_nav">
       <!-- logo -->
       <div id="side_logo">
         <div id="logo"></div>
-        <p>头条管理系统</p>
+        <p v-show="isfold">头条管理系统</p>
       </div>
 
       <!-- 分类组件 -->
@@ -20,21 +20,27 @@
           @click="updata_style(i)"
         >
           <router-link :to="'/' + item.to"
-            ><i :class="['iconfont', 'icon-' + item.class_icon]"></i>&nbsp;{{
-              item.text
-            }}</router-link
+            ><i :class="['iconfont', 'icon-' + item.class_icon]"></i>&nbsp;
+            <p v-show="isfold">{{ item.text }}</p></router-link
           >
         </li>
       </ul>
     </div>
 
     <!-- 右侧导航栏 -->
-    <div id="side_nav_r">
+    <div id="side_nav_r" ref="r_nav">
       <!-- 头部导航 -->
       <div id="header_nav">
         <!-- 公司信息 -->
         <div id="firm">
-          <i class="iconfont icon-zhedie"></i>
+          <i
+            :class="{
+              iconfont: true,
+              'icon-zhedie': isfold,
+              'icon-zhedie2': !isfold,
+            }"
+            @click="fold"
+          ></i>
           &nbsp;
           <p>ABC公司制作的头条管理系统</p>
         </div>
@@ -57,8 +63,8 @@
           <!-- 用户功能区 -->
           <div id="user_facility" v-show="user_f">
             <ul>
-              <li>13256</li>
-              <li>退出登录</li>
+              <li>个人设置</li>
+              <li @click="remove_user">退出登录</li>
             </ul>
           </div>
         </div>
@@ -77,7 +83,6 @@
 import { user_info } from "@/apis/user";
 export default {
   name: "layout",
-
   data() {
     return {
       // 导航栏的详细配置
@@ -86,7 +91,7 @@ export default {
       // text----展示的文字内容
       // isclick----决定点击后li的样式
       rout: [
-        { to: "", class_icon: "shouye", text: "首页", isclick: false },
+        { to: "", class_icon: "shouye", text: "首页", isclick: true },
         {
           to: "conest",
           class_icon: "rizhimingxi",
@@ -134,12 +139,16 @@ export default {
       // 登录状态
       is_true: true,
       is_false: false,
+
+      // 折叠状态
+      isfold: true,
     };
   },
 
   // 在组件构建完整时接发送一次get请求
   created() {
     this.getUserInfo();
+    this.$router.push("/");
   },
 
   methods: {
@@ -190,8 +199,27 @@ export default {
         });
     },
 
+    // 退出登录功能
+    remove_user() {
+      localStorage.removeItem("token");
+      this.$router.push("/login");
+    },
+
     // 用户点击功能
     user_facility() {},
+
+    //折叠导航栏
+    fold() {
+      if (this.isfold) {
+        this.isfold = false;
+        this.$refs.l_nav.style.width = "5%";
+        this.$refs.r_nav.style.width = "95%";
+      } else {
+        this.isfold = true;
+        this.$refs.l_nav.style.width = "16%";
+        this.$refs.r_nav.style.width = "84%";
+      }
+    },
   },
 };
 </script>
@@ -250,9 +278,14 @@ export default {
         line-height: 88px;
         font-size: 18px;
         cursor: pointer;
+
+        p {
+          display: inline;
+          // margin-left: 10px;
+        }
         a {
           display: block;
-          padding-left: 10%;
+          padding-left: 25%;
           width: 100%;
           height: 100%;
           color: #fff;
@@ -385,6 +418,10 @@ export default {
       height: 100%;
       background-color: #fff;
     }
+  }
+
+  .check_font {
+    font-size: 20px;
   }
 }
 </style>
