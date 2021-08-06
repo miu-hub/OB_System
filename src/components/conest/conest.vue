@@ -136,7 +136,7 @@
           <!-- 体 -->
           <tbody>
             <!-- 利用从接口获得的数据进行遍历 -->
-            <tr v-for="item in articles" :key="item.id" v-show="is_no_data">
+            <tr v-for="(item, i) in articles" :key="i" v-show="is_no_data">
               <td>
                 <img
                   :src="item.cover.images[0]"
@@ -167,8 +167,8 @@
 
               <!-- 文章的编辑删除模块 -->
               <td>
-                <button id="edit_btn">编辑</button>
-                <button id="del_btn">删除</button>
+                <button id="edit_btn" @click="edit_btn(item.id)">编辑</button>
+                <button id="del_btn" @click="del_btn(item.id)">删除</button>
               </td>
             </tr>
 
@@ -191,6 +191,7 @@
             :disabled="is_load"
             layout="prev, pager, next"
             :total="pages_updata"
+            :current-page.sync="time_li"
             @current-change="yema"
           >
           </el-pagination>
@@ -201,7 +202,7 @@
 </template>
 
 <script>
-import { articles, channel, channel_id } from "../../apis/article";
+import { articles, channel, del_channel } from "../../apis/article";
 // 引入专门处理文章相关的请求方法
 export default {
   name: "const",
@@ -253,29 +254,27 @@ export default {
       let tokens = localStorage.getItem("token");
 
       // 调用请求方法---将用户令牌传递-----将接口参数传递
-
       articles(tokens, {
-        //处理在第几页
-        page: this.time_li,
-        //处理一页包含多少数据
-
-        per_page: 20,
+        // 筛选的文章状态选项
+        status: this.from_status,
 
         // 筛选文章的频道内容
         channel_id: this.channl_status,
-
-        // 筛选的文章状态选项
-        status: this.from_status,
 
         // 文章时间筛选状态
         // 开始----若是用户传递了任意的空时间,依然将其作为参数请求
         begin_pubdate: this.value1 ? this.value1[0] : undefined,
         // 结束
         end_pubdate: this.value1 ? this.value1[1] : undefined,
+        
+        
+        //处理在第几页
+        page: this.time_li,
+        //处理一页包含多少数据
+        per_page: 20,
       })
         .then((data) => {
           let datas = data.data.data;
-
           // 获取成功请求返回的数据并赋值给data中的数据
           this.articles = datas.results;
 
@@ -289,7 +288,11 @@ export default {
           this.is_load = false;
         })
         .catch((err) => {
-          console.log(err);
+          console.log("出错" + err);
+          // 出错2s后停止加载
+          setTimeout(() => {
+            this.is_load = false;
+          }, 2000);
         });
     },
 
@@ -324,11 +327,9 @@ export default {
     },
 
     // 页码改变
-    yema(val) {
+    yema() {
       // 触发页码导航时加载loading
       this.is_load = true;
-      // val为更改的当前页
-      this.time_li = val;
       // 重新请求
       this.articles_updata();
     },
@@ -348,6 +349,26 @@ export default {
       // 当更改信息重新请求时加载loading
       this.is_load = true;
       //包括id更改,时间更改,状态更改
+      this.articles_updata();
+    },
+
+    // 编辑
+    edit_btn() {
+      console.log("编辑");
+    },
+
+    // 删除
+    del_btn(value) {
+      // 将第三方包处理的数据id作为参数传递-----.toString()第三方包要求
+      del_channel(value.toString())
+        .then((data) => {
+          // 查看删除成功返回数据
+          console.log(data.message);
+        })
+        .catch((err) => {
+          console.log("出错了" + err);
+        });
+
       this.articles_updata();
     },
   },
@@ -587,12 +608,23 @@ export default {
               color: #fff;
               font-weight: 700;
               border-radius: 50%;
+              cursor: pointer;
             }
 
             #edit_btn {
-              background-color: skyblue;
+              background-color: rgba(119, 204, 238, 0.3);
             }
+
+            #edit_btn:hover {
+              background-color: blue;
+            }
+
             #del_btn {
+              margin-left: 10px;
+              background-color: rgba(219, 49, 49, 0.3);
+            }
+
+            #del_btn:hover {
               margin-left: 10px;
               background-color: red;
             }

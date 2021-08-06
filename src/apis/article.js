@@ -41,4 +41,12 @@ export const channel = (token) => {
     })
 }
 
+// 删除模块
+export const del_channel = (tar_id) => {
+    return request({
+        methods: 'DELETE',
+        url: `/mp/v1_0/articles/${tar_id}`,
+    })
+}
+
 
