@@ -15,26 +15,51 @@
         <!-- 单选筛选审核状态区域 -->
         <div id="radio">
           <p>状态：</p>
-          <input type="radio" id="all" name="from" checked /><label for="all"
-            >全部</label
-          >
-          <input type="radio" id="draft " name="from" /><label for="draft "
-            >草稿</label
-          >
-          <input type="radio" id="to_audit" name="from" /><label for="to_audit"
-            >待审核</label
-          >
+          <input
+            type="radio"
+            id="all"
+            name="from"
+            checked
+            :value="null"
+            v-model="from_status"
+          /><label for="all">全部</label>
+          <input
+            type="radio"
+            id="draft "
+            name="from"
+            :value="0"
+            v-model="from_status"
+          /><label for="draft ">草稿</label>
+          <input
+            type="radio"
+            id="to_audit"
+            name="from"
+            :value="1"
+            v-model="from_status"
+          /><label for="to_audit">待审核</label>
 
-          <input type="radio" id="pass" name="from" /><label for="pass"
-            >审核通过</label
-          >
-          <input type="radio" id="err" name="from" /><label for="err"
-            >审核失败</label
-          >
+          <input
+            type="radio"
+            id="pass"
+            name="from"
+            :value="2"
+            v-model="from_status"
+          /><label for="pass">审核通过</label>
+          <input
+            type="radio"
+            id="err"
+            name="from"
+            :value="3"
+            v-model="from_status"
+          /><label for="err">审核失败</label>
 
-          <input type="radio" id="del" name="from" /><label for="del"
-            >已删除</label
-          >
+          <input
+            type="radio"
+            id="del"
+            name="from"
+            :value="4"
+            v-model="from_status"
+          /><label for="del">已删除</label>
         </div>
 
         <!-- 筛选时间模块 -->
@@ -86,7 +111,7 @@
         </div>
 
         <!-- 查询按钮 -->
-        <button id="sumit">查询</button>
+        <button id="sumit" @click="commit_btn">查询</button>
       </div>
     </div>
 
@@ -110,7 +135,7 @@
         <!-- 体 -->
         <tbody>
           <!-- 利用从接口获得的数据进行遍历 -->
-          <tr v-for="item in articles" :key="item.id">
+          <tr v-for="item in articles" :key="item.id" v-show="is_no_data">
             <td>
               <img
                 :src="item.cover.images[0]"
@@ -145,6 +170,14 @@
               <button id="del_btn">删除</button>
             </td>
           </tr>
+
+          <tr v-show="!is_no_data">
+            <td>暂无数据</td>
+            <td>暂无数据</td>
+            <td>暂无数据</td>
+            <td>暂无数据</td>
+            <td>暂无数据</td>
+          </tr>
         </tbody>
       </table>
 
@@ -155,7 +188,7 @@
         <el-pagination
           background
           layout="prev, pager, next"
-          :total="total_count"
+          :total="pages_updata"
           @current-change="yema"
         >
         </el-pagination>
@@ -178,8 +211,14 @@ export default {
       value2: "",
       // 当前页码
       time_li: 1,
+      // 文章总页码
+      pages_updata: 0,
       // 文章总数
       total_count: 0,
+      // 控制有无文章是的展示
+      is_no_data: "",
+      // 表单提交的筛选数据状态要求
+      from_status: null,
     };
   },
 
@@ -198,13 +237,21 @@ export default {
       articles(tokens, {
         page: this.time_li, //处理在第几页
         per_page: 20, //处理一页包含多少数据
+
+        // 筛选的文章状态选项
+        status: this.from_status,
       })
         .then((data) => {
           let datas = data.data.data;
+
           // 获取成功请求返回的数据并赋值给data中的数据
           this.articles = datas.results;
-          //将获取的文章总数赋值total_count
-          this.total_count = datas.total_count * 10;
+
+          // 调用展示文章总数方法
+          this.sum(datas);
+
+          // 调用控制页码总数的方法
+          this.page_sum(datas);
         })
         .catch((err) => {
           console.log(err);
@@ -214,6 +261,40 @@ export default {
     // 页码改变
     yema(val) {
       this.time_li = val;
+      this.articles_updata();
+    },
+
+    // 页码总数
+    page_sum(data) {
+      // 满20的页码数
+      let yema = parseInt(data.total_count / 20);
+      let i = 0;
+
+      // 判断页码在满与不满的情况下页码数
+      if (data.total_count % 20) {
+        i = i + 1;
+      }
+      this.pages_updata = (yema + i) * 10;
+    },
+
+    // 文章总数
+    sum(data) {
+      console.log(data.total_count);
+
+      // 当文章数量为0时展示另一个数据;
+      if (data.total_count == 0) {
+        this.is_no_data = false;
+      } else {
+        this.is_no_data = true;
+      }
+
+      //将获取的文章总数赋值total_count
+      this.total_count = data.total_count;
+    },
+
+    // 提交筛选要求
+    commit_btn() {
+      // 调用请求方法刷新数据
       this.articles_updata();
     },
   },
