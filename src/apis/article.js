@@ -31,7 +31,7 @@ export const articles = (token, params, channel_id, begin_pubdate, end_pubdate) 
 // 获取文章频道接口
 export const channel = (token) => {
     return request({
-        methods: 'GET',
+        method: 'GET',
         url: '/mp/v1_0/channels',
 
         headers: {
@@ -41,11 +41,30 @@ export const channel = (token) => {
     })
 }
 
-// 删除模块
+// 删除文章模块
 export const del_channel = (tar_id) => {
     return request({
-        methods: 'DELETE',
+        method: 'DELETE',
         url: `/mp/v1_0/articles/${tar_id}`,
+    })
+}
+
+
+// 发布文章
+export const public_article = (token, data, isdraft) => {
+    return request({
+        method: 'POST',
+        url: '/mp/v1_0/articles',
+
+        headers: {
+            Authorization: `Bearer ${token}`
+        },
+
+        params: {
+            draft: isdraft,
+        },
+
+        data,
     })
 }
 

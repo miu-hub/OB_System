@@ -64,7 +64,7 @@
           <div id="user_facility" v-show="user_f">
             <ul>
               <li>个人设置</li>
-              <li @click="remove_user">退出登录</li>
+              <li @click="remove_user('退出成功', 'green')">退出登录</li>
             </ul>
           </div>
         </div>
@@ -75,6 +75,12 @@
         <router-view> </router-view>
       </div>
     </div>
+    <!-- 警示框 -->
+    <transition name="warring">
+      <div id="warring" v-show="isclick_warring">
+        <p ref="war_color">{{ war_text }}</p>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -142,6 +148,11 @@ export default {
 
       // 折叠状态
       isfold: true,
+      // 警告状态
+      isclick_warring: false,
+      // 警告框的文本状态
+      war_text: "",
+      war_color: "",
     };
   },
 
@@ -200,9 +211,14 @@ export default {
     },
 
     // 退出登录功能
-    remove_user() {
+    remove_user(text, color) {
       localStorage.removeItem("token");
-      this.$router.push("/login");
+      // 调用弹出警告方法
+      this.warring_click(text, color);
+      // 3s后跳转
+      setTimeout(() => {
+        this.$router.push("/login");
+      }, 3000);
     },
 
     // 用户点击功能
@@ -220,6 +236,19 @@ export default {
         this.$refs.r_nav.style.width = "84%";
       }
     },
+    // 警告框方法
+    warring_click(text, color) {
+      // 更改警告框文本
+      this.war_text = text;
+      // 更改警告文本颜色
+      this.$refs.war_color.style.color = color;
+      // 显示警告框
+      this.isclick_warring = true;
+      // 警告框隐藏
+      setTimeout(() => {
+        this.isclick_warring = false;
+      }, 2000);
+    },
   },
 };
 </script>
@@ -231,6 +260,29 @@ export default {
   bottom: 0;
   left: 0;
   right: 0;
+
+  // 警示框
+  #warring {
+    width: 300px;
+    height: 50px;
+    position: fixed;
+    top: 50px;
+    left: 45%;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0px 0px 10px 0px #666;
+
+    p {
+      width: 100%;
+      height: 50px;
+      text-align: center;
+      font-size: 20px;
+      font-family: "kaiti";
+      font-weight: 700;
+      color: rgb(238, 116, 116);
+      line-height: 50px;
+    }
+  }
 
   // 左侧
   #side_nav {
@@ -422,6 +474,24 @@ export default {
 
   .check_font {
     font-size: 20px;
+  }
+}
+
+.warring-enter-active {
+  animation: 1.5s show;
+}
+.warring-leave-active {
+  animation: 0.5s show linear reverse;
+}
+
+@keyframes show {
+  0% {
+    top: 0px;
+    opacity: 0;
+  }
+  100% {
+    top: 50px;
+    opacity: 1;
   }
 }
 </style>

@@ -358,6 +358,7 @@ export default {
 
     // 删除
     del_btn(value) {
+      // console.log(value.toString());
       // 将第三方包处理的数据id作为参数传递-----.toString()第三方包要求
       del_channel(value.toString())
         .then((data) => {

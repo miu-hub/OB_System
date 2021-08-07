@@ -20,7 +20,13 @@
           <div id="title">
             <p>标题：</p>
             <!-- 标题输入框 -->
-            <input type="text" id="public_title" />
+            <input
+              maxlength="30"
+              minlength="5"
+              type="text"
+              id="public_title"
+              v-model="info.title"
+            />
           </div>
           <!-- 内容 -->
           <div id="content">
@@ -30,6 +36,7 @@
               id="public_content"
               cols="30"
               rows="10"
+              v-model="info.content"
             ></textarea>
           </div>
           <!-- 封面 -->
@@ -38,18 +45,34 @@
             <div id="public_cover">
               <!-- 封面 -->
               <p>封面</p>
-              <input type="radio" id="one" name="_cover" /><label for="one"
-                >单图</label
-              >
-              <input type="radio" id="three" name="_cover" /><label for="three"
-                >三图</label
-              >
-              <input type="radio" id="no_w" name="_cover" /><label for="no_w"
-                >无图</label
-              >
-              <input type="radio" id="auto" name="_cover" /><label for="auto"
-                >自动</label
-              >
+              <input
+                type="radio"
+                id="one"
+                v-model="info.cover.type"
+                :value="1"
+                name="_cover"
+              /><label for="one">单图</label>
+              <input
+                type="radio"
+                id="three"
+                v-model="info.cover.type"
+                :value="3"
+                name="_cover"
+              /><label for="three">三图</label>
+              <input
+                type="radio"
+                id="no_w"
+                v-model="info.cover.type"
+                :value="0"
+                name="_cover"
+              /><label for="no_w">无图</label>
+              <input
+                type="radio"
+                id="auto"
+                v-model="info.cover.type"
+                :value="-1"
+                name="_cover"
+              /><label for="auto">自动</label>
             </div>
             <!-- 封面图 -->
             <div id="img"></div>
@@ -58,15 +81,30 @@
           <div id="activity">
             <p>频道：</p>
             <div id="public_activity">
-              <select name="" id="channel">
-                <option value="">未选择</option>
+              <select name="" id="channel" v-model="info.channel_id">
+                <option value="">请选择</option>
+                <option v-for="(item, i) in article" :key="i" :value="item.id">
+                  {{ item.name }}
+                </option>
               </select>
             </div>
           </div>
           <!-- button提交 -->
           <div id="btn">
-            <button id="commit_channel">发布文章</button>
-            <button id="commit_draft">存草稿</button>
+            <button
+              id="commit_channel"
+              @click="request(false)"
+              :disabled="is_button"
+            >
+              发布文章
+            </button>
+            <button
+              id="commit_draft"
+              @click="request(true)"
+              :disabled="is_button"
+            >
+              存草稿
+            </button>
           </div>
         </div>
       </div>
@@ -75,10 +113,87 @@
 </template>
 
 <script>
+import { public_article, channel } from "../../apis/article";
 export default {
   name: "issue",
   data() {
-    return {};
+    return {
+      // 存储文章的信息
+      article: [],
+
+      // 提交按钮禁用状态
+      is_button: false,
+
+      // 提交请求的数据
+      info: {
+        // 文章频道状态
+        channel_id: "",
+
+        // img图片状态
+        cover: { type: "1", images: [] },
+
+        // 标题
+        title: "",
+        // 富文本
+        content: "",
+      },
+    };
+  },
+
+  created() {
+    // 组件构建完成后加载请求频道模块
+    this.get_article();
+  },
+
+  methods: {
+    // 请求方法------将文章数据提交
+    request(isCaoGao) {
+      // 关闭禁用状态
+      this.is_button = true;
+      console.log("cs");
+      // 获取用户令牌
+      let tokens = localStorage.getItem("token");
+
+      // 标题长度
+      let length = this.info.title.length;
+
+      // 判断数据长度是否符合规范
+      if (length >= 5 && length <= 30) {
+        // 调用发送文章的请求
+        // 有三个参数------tokens即为用户令牌：用于验证-----this.info接口规定的发布文章的数据--以body形式发送
+        // isCaoGao即为是否存草稿-----query传递
+        public_article(tokens, this.info, isCaoGao)
+          .then((data) => {
+            // 返回状态码并返回文章id
+            console.log(data.data.data.id.toString());
+            // 关闭禁用状态
+            this.is_button = false;
+          })
+          .catch((err) => {
+            console.log("出错了" + err);
+            // 关闭禁用状态
+            this.is_button = false;
+          });
+      } else {
+        alert("输入的字符长度应该在3~50之间");
+        
+      }
+    },
+
+    // 获取文章信息
+    get_article() {
+      // 从本地获取用户令牌
+      let tokens = localStorage.getItem("token");
+      // 调用文章获取方法
+      channel(tokens).then((data) => {
+        let arr = data.data.data.channels;
+        // 向数据中添加一个一个自定义全部数据及id
+        // id为空时筛选全部频道数据
+        arr.push({ name: "全部", id: undefined });
+        // 交给vue来渲染
+        this.article = arr;
+      });
+    },
   },
 };
 </script>
