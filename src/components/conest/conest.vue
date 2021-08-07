@@ -169,6 +169,7 @@
               <td>
                 <button id="edit_btn" @click="edit_btn(item.id)">编辑</button>
                 <button id="del_btn" @click="del_btn(item.id)">删除</button>
+                <!-- <el-button type="text" id="" @click="open">删除</el-button> -->
               </td>
             </tr>
 
@@ -352,22 +353,43 @@ export default {
     },
 
     // 编辑
-    edit_btn() {
-      console.log("编辑");
+    edit_btn(art_id) {
+      // 点击编辑按钮将传递的文章id通过路径传参交给issue组件
+      this.$router.push(`/issue?id=${art_id}`);
     },
 
     // 删除
     del_btn(value) {
-      // console.log(value.toString());
-      // 将第三方包处理的数据id作为参数传递-----.toString()第三方包要求
-      del_channel(value.toString())
-        .then((data) => {
-          // 查看删除成功返回数据
-          console.log(data.message);
-          this.articles_updata();
+      // 使用第三放库来控制提示
+      this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          // 获取用户令牌
+          let tokens = localStorage.getItem("token");
+          // 将第三方包处理的数据id作为参数传递-----.toString()第三方包要求
+          del_channel(value.toString(), tokens)
+            .then((data) => {
+              // 查看删除成功返回数据
+              this.articles_updata();
+            })
+            // 删除失败回调----已确认情况下
+            .catch((err) => {
+              console.log("出错了" + err);
+            });
+
+          this.$message({
+            type: "success",
+            message: "删除成功!",
+          });
         })
-        .catch((err) => {
-          console.log("出错了" + err);
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除",
+          });
         });
     },
   },

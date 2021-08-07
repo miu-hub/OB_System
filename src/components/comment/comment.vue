@@ -9,6 +9,5 @@ export default {
   name: "comment",
 };
 </script>
-
 <style>
 </style>

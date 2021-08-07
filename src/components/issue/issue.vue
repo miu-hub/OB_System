@@ -113,7 +113,12 @@
 </template>
 
 <script>
-import { public_article, channel } from "../../apis/article";
+import {
+  public_article,
+  channel,
+  id_article,
+  edit_article,
+} from "../../apis/article";
 export default {
   name: "issue",
   data() {
@@ -143,6 +148,11 @@ export default {
   created() {
     // 组件构建完成后加载请求频道模块
     this.get_article();
+    // 判断是否有路径参数值
+    if (this.$route.query.id) {
+      // 将id传入获取方法
+      this.put_article(this.$route.query.id);
+    }
   },
 
   methods: {
@@ -150,33 +160,49 @@ export default {
     request(isCaoGao) {
       // 关闭禁用状态
       this.is_button = true;
-      console.log("cs");
       // 获取用户令牌
       let tokens = localStorage.getItem("token");
 
       // 标题长度
       let length = this.info.title.length;
-
       // 判断数据长度是否符合规范
       if (length >= 5 && length <= 30) {
-        // 调用发送文章的请求
-        // 有三个参数------tokens即为用户令牌：用于验证-----this.info接口规定的发布文章的数据--以body形式发送
-        // isCaoGao即为是否存草稿-----query传递
-        public_article(tokens, this.info, isCaoGao)
-          .then((data) => {
-            // 返回状态码并返回文章id
-            console.log(data.data.data.id.toString());
-            // 关闭禁用状态
-            this.is_button = false;
-          })
-          .catch((err) => {
-            console.log("出错了" + err);
-            // 关闭禁用状态
-            this.is_button = false;
-          });
+        // 修改的请求情况下
+        if (this.$route.query.id) {
+          let id = this.$route.query.id;
+          // 调用更改文章的接口
+          edit_article(tokens, id, this.info, isCaoGao)
+            .then((data) => {
+              alert("编辑成功");
+              // 修改完成后跳转内容区
+              this.$router.push("/conest");
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        }
+        // 非修改只发布
+        else {
+          // 调用发送文章的请求
+          // 有三个参数------tokens即为用户令牌：用于验证-----this.info接口规定的发布文章的数据--以body形式发送
+          // isCaoGao即为是否存草稿-----query传递
+          public_article(tokens, this.info, isCaoGao)
+            .then((data) => {
+              // 返回状态码并返回文章id
+              console.log(data.data.data.id.toString());
+              // 关闭禁用状态
+              this.is_button = false;
+              console.log("发布成功");
+              this.$router.push("/conest");
+            })
+            .catch((err) => {
+              console.log("出错了" + err);
+              // 关闭禁用状态
+              this.is_button = false;
+            });
+        }
       } else {
         alert("输入的字符长度应该在3~50之间");
-        
       }
     },
 
@@ -193,6 +219,22 @@ export default {
         // 交给vue来渲染
         this.article = arr;
       });
+    },
+
+    // 修改文章信息
+    put_article(id) {
+      // 从本地获取用户令牌
+      let tokens = localStorage.getItem("token");
+      // 调用获取用户id的方法
+      id_article(tokens, id)
+        .then((data) => {
+          let datas = data.data.data;
+          //  将获取的用户文章数据给到info对象重新渲染
+          this.info = datas;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
   },
 };
