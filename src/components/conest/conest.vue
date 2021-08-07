@@ -252,7 +252,6 @@ export default {
     articles_updata() {
       // 从本地获取用户令牌
       let tokens = localStorage.getItem("token");
-
       // 调用请求方法---将用户令牌传递-----将接口参数传递
       articles(tokens, {
         // 筛选的文章状态选项
@@ -266,8 +265,7 @@ export default {
         begin_pubdate: this.value1 ? this.value1[0] : undefined,
         // 结束
         end_pubdate: this.value1 ? this.value1[1] : undefined,
-        
-        
+
         //处理在第几页
         page: this.time_li,
         //处理一页包含多少数据
@@ -292,6 +290,7 @@ export default {
           // 出错2s后停止加载
           setTimeout(() => {
             this.is_load = false;
+            alert("加载失败");
           }, 2000);
         });
     },
@@ -364,12 +363,11 @@ export default {
         .then((data) => {
           // 查看删除成功返回数据
           console.log(data.message);
+          this.articles_updata();
         })
         .catch((err) => {
           console.log("出错了" + err);
         });
-
-      this.articles_updata();
     },
   },
 };
