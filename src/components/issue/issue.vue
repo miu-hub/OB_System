@@ -25,6 +25,7 @@
               minlength="5"
               type="text"
               id="public_title"
+              placeholder="请输入标题"
               v-model="info.title"
             />
           </div>
@@ -33,8 +34,9 @@
             <p>文章内容：</p>
             <!-- 利用富文本编辑器完成 -->
             <el-tiptap
-              id="public_content"
               v-model="info.content"
+              width="80%"
+              height="400px"
               :extensions="extensions"
               lang="zh"
             />
@@ -217,10 +219,19 @@ export default {
       // 获取用户令牌
       let tokens = localStorage.getItem("token");
 
-      // 标题长度
-      let length = this.info.title.length;
+      // 数据长度-----去除空格
+      let title_length = this.info.title.trim().length;
+      let content_length = this.info.content.trim().length;
+      // let cover_length = this.info.cover.type.trim().length;
+      let id_length = this.info.channel_id.trim().length;
       // 判断数据长度是否符合规范
-      if (length >= 5 && length <= 30) {
+      if (
+        title_length >= 5 &&
+        title_length <= 30 &&
+        content_length > 0 &&
+        // cover_length > 0 &&
+        id_length > 0
+      ) {
         // 修改的请求情况下
         if (this.$route.query.id) {
           let id = this.$route.query.id;
@@ -262,9 +273,12 @@ export default {
             });
         }
       } else {
-        alert("输入的字符长度应该在3~50之间");
+        alert("所有项必填");
         // 关闭禁用状态
         this.is_button = false;
+        // 重置数据
+        this.info.title = "";
+        this.info.content = "";
       }
     },
 
@@ -371,7 +385,7 @@ export default {
             height: 60px;
             text-indent: 0.5em;
             font-size: 24px;
-            color: #ccc;
+            color: #000;
           }
         }
         // 内容
@@ -387,15 +401,6 @@ export default {
             height: 30px;
             color: skyblue;
             font-size: 20px;
-          }
-          // 文章内容输入
-          #public_content {
-            padding: 10px 10px;
-            width: 80%;
-            height: 400px;
-            color: #ccc;
-            // 禁止拖拽
-            resize: none;
           }
         }
         // 封面
