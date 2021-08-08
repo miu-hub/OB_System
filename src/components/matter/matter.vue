@@ -26,7 +26,48 @@
           </div>
         </div>
         <!-- 图片展示区 -->
-        <div id="desplay_img"></div>
+        <div id="desplay_img">
+          <el-col :lg="6" :md="8" :sm="12" :xs="24"
+            ><el-image
+              style="width:180px height: 200px"
+              :src="url"
+              fit="cover "
+              :preview-src-list="srcList"
+            ></el-image>
+          </el-col>
+          <el-col :lg="6" :md="8" :sm="12" :xs="24"
+            ><el-image
+              style="width:180px height: 200px"
+              :src="url"
+              fit="cover "
+              :preview-src-list="srcList"
+            ></el-image>
+          </el-col>
+          <el-col :lg="6" :md="8" :sm="12" :xs="24"
+            ><el-image
+              style="width:180px height: 200px"
+              :src="url"
+              fit="cover "
+              :preview-src-list="srcList"
+            ></el-image>
+          </el-col>
+          <el-col :lg="6" :md="8" :sm="12" :xs="24"
+            ><el-image
+              style="width:180px height: 200px"
+              :src="url"
+              fit="cover "
+              :preview-src-list="srcList"
+            ></el-image>
+          </el-col>
+          <el-col :lg="6" :md="8" :sm="12" :xs="24"
+            ><el-image
+              style="width:180px height: 200px"
+              :src="url"
+              fit="cover "
+              :preview-src-list="srcList"
+            ></el-image>
+          </el-col>
+        </div>
         <!-- 分栏区 -->
         <div id="page_number">
           <el-pagination background layout="prev, pager, next" :total="1000">
@@ -41,7 +82,12 @@
 export default {
   name: "matter",
   data() {
-    return {};
+    return {
+      url: "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
+      srcList: [
+        "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
+      ],
+    };
   },
 };
 </script>
@@ -156,6 +202,8 @@ export default {
 
       // 图片展示区
       #desplay_img {
+        overflow: auto;
+        padding: 10px 0px;
         width: 80%;
         height: 500px;
         border-top: 1px solid #666;

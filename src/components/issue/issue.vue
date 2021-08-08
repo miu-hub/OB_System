@@ -223,14 +223,14 @@ export default {
       let title_length = this.info.title.trim().length;
       let content_length = this.info.content.trim().length;
       // let cover_length = this.info.cover.type.trim().length;
-      let id_length = this.info.channel_id.trim().length;
+      // let id_length = this.info.channel_id;
       // 判断数据长度是否符合规范
       if (
         title_length >= 5 &&
         title_length <= 30 &&
-        content_length > 0 &&
+        content_length > 0
         // cover_length > 0 &&
-        id_length > 0
+        // id_length > 0
       ) {
         // 修改的请求情况下
         if (this.$route.query.id) {
