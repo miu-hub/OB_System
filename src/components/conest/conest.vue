@@ -169,7 +169,6 @@
               <td>
                 <button id="edit_btn" @click="edit_btn(item.id)">编辑</button>
                 <button id="del_btn" @click="del_btn(item.id)">删除</button>
-                <!-- <el-button type="text" id="" @click="open">删除</el-button> -->
               </td>
             </tr>
 

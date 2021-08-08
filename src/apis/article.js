@@ -58,12 +58,9 @@ export const public_article = (token, data, isdraft) => {
         headers: {
             Authorization: `Bearer ${token}`
         },
-
-        params: {
-            draft: isdraft,
-        },
-
         data,
+
+        params: { draft: isdraft }
     })
 }
 
@@ -92,3 +89,4 @@ export const edit_article = (token, article_id, data, isdraft) => {
         params: { draft: isdraft }
     })
 }
+

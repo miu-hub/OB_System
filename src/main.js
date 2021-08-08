@@ -13,6 +13,9 @@ import '@/style/download/font_2718970_6lv8wrmi1a7/iconfont.css'
 // 引入vuex配置文件
 import store from '@/store/store.js'
 
+// 加载tiptap样式
+import "element-tiptap/lib/index.css";
+
 // 语法提示
 Vue.config.productionTip = false
 

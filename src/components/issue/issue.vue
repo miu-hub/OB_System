@@ -31,13 +31,13 @@
           <!-- 内容 -->
           <div id="content">
             <p>文章内容：</p>
-            <textarea
-              name=""
+            <!-- 利用富文本编辑器完成 -->
+            <el-tiptap
               id="public_content"
-              cols="30"
-              rows="10"
               v-model="info.content"
-            ></textarea>
+              :extensions="extensions"
+              lang="zh"
+            />
           </div>
           <!-- 封面 -->
           <div id="cover">
@@ -114,13 +114,36 @@
 
 <script>
 import {
+  //实例
+  ElementTiptap,
+  // 需要的 extensions-----功能项
+  Doc,
+  Text,
+  Paragraph,
+  Heading,
+  Bold,
+  Underline,
+  Italic,
+  Strike,
+  Image,
+  ListItem,
+  BulletList,
+  OrderedList,
+} from "element-tiptap";
+// 请求方法
+import {
   public_article,
   channel,
   id_article,
   edit_article,
 } from "../../apis/article";
+import { user_img } from "../../apis/user_matter";
 export default {
   name: "issue",
+  // 注册el-tiptap组件接收
+  components: {
+    "el-tiptap": ElementTiptap,
+  },
   data() {
     return {
       // 存储文章的信息
@@ -142,6 +165,37 @@ export default {
         // 富文本
         content: "",
       },
+
+      // ele-tiptap数据
+      extensions: [
+        new Doc(),
+        new Text(),
+        new Paragraph(),
+        new Heading({ level: 5 }),
+        new Bold({ bubble: true }), // 在气泡菜单中渲染菜单按钮
+        new Underline({ bubble: true, menubar: false }), // 在气泡菜单而不在菜单栏中渲染菜单按钮
+        new Italic(),
+        new Strike(),
+        new Image({
+          // images的配置---uploadRequest接收一个参数，即用户使用的图片信息
+          uploadRequest(flie) {
+            let tokens = localStorage.getItem("token");
+
+            // 使用FormData后不用添加content-type，并且将image以对象键值的方法添加到data
+            let data = new FormData();
+            data.append("image", flie);
+            // 使用user_img请求·---这里返回promies对象-----必须
+            return user_img(tokens, data).then((data) => {
+              let url = data.data.data.url;
+              // 返回返回数据中的图片路径------必须
+              return url;
+            });
+          },
+        }),
+        new ListItem(),
+        new BulletList(),
+        new OrderedList(),
+      ],
     };
   },
 
@@ -158,7 +212,7 @@ export default {
   methods: {
     // 请求方法------将文章数据提交
     request(isCaoGao) {
-      // 关闭禁用状态
+      // 开启禁用状态
       this.is_button = true;
       // 获取用户令牌
       let tokens = localStorage.getItem("token");
@@ -170,15 +224,20 @@ export default {
         // 修改的请求情况下
         if (this.$route.query.id) {
           let id = this.$route.query.id;
+          console.log(isCaoGao);
           // 调用更改文章的接口
           edit_article(tokens, id, this.info, isCaoGao)
             .then((data) => {
               alert("编辑成功");
               // 修改完成后跳转内容区
+              // 关闭禁用状态
+              this.is_button = false;
               this.$router.push("/conest");
             })
             .catch((err) => {
               console.log(err);
+              // 关闭禁用状态
+              this.is_button = false;
             });
         }
         // 非修改只发布
@@ -186,6 +245,7 @@ export default {
           // 调用发送文章的请求
           // 有三个参数------tokens即为用户令牌：用于验证-----this.info接口规定的发布文章的数据--以body形式发送
           // isCaoGao即为是否存草稿-----query传递
+          console.log(isCaoGao);
           public_article(tokens, this.info, isCaoGao)
             .then((data) => {
               // 返回状态码并返回文章id
@@ -203,6 +263,8 @@ export default {
         }
       } else {
         alert("输入的字符长度应该在3~50之间");
+        // 关闭禁用状态
+        this.is_button = false;
       }
     },
 
@@ -331,7 +393,6 @@ export default {
             padding: 10px 10px;
             width: 80%;
             height: 400px;
-            font-size: 24px;
             color: #ccc;
             // 禁止拖拽
             resize: none;
