@@ -60,7 +60,7 @@ export const del_matter = (token, target) => {
 }
 
 // 获取用户图片
-export const get_matter = (token, params, data) => {
+export const get_matter = (token, params) => {
     return axios({
         method: 'GET',
         url: '/mp/v1_0/user/images',
@@ -68,6 +68,5 @@ export const get_matter = (token, params, data) => {
             Authorization: `Bearer ${token}`
         },
         params,
-        data
     })
 }

@@ -235,7 +235,6 @@ export default {
         // 修改的请求情况下
         if (this.$route.query.id) {
           let id = this.$route.query.id;
-          console.log(isCaoGao);
           // 调用更改文章的接口
           edit_article(tokens, id, this.info, isCaoGao)
             .then((data) => {
