@@ -45,7 +45,12 @@
           </div>
         </div>
         <!-- 图片展示区 -->
-        <div id="desplay_img">
+        <div id="desplay_img" style="position: relative">
+          <el-table
+            v-loading="loading"
+            style="position: absolute; width: 100%; height: 140%"
+          >
+          </el-table>
           <el-col
             :lg="6"
             :md="8"
@@ -61,7 +66,6 @@
             </el-image>
             <div id="icon">
               <!-- 收藏 -->
-              <i class="el-icon-more"></i>
               <i
                 :class="{
                   'el-icon-star-off': !item.is_collected,
@@ -105,8 +109,8 @@ export default {
 
       // 页面页码数
       total: 0,
-      // 控制鼠标进入时收藏显示
-      is_over: false,
+      // loading加载项
+      loading: true,
       // 当前页码
       page: 1,
       // 配置请求头
@@ -123,6 +127,8 @@ export default {
   methods: {
     // 发送请求方法
     getUserMatter() {
+      // 开启loading
+      this.loading = true;
       let tokens = localStorage.getItem("token");
       get_matter(tokens, {
         // 控制显示全部或者收藏
@@ -135,10 +141,7 @@ export default {
         .then((data) => {
           // 获取返回的数据
           let datas = data.data.data.results;
-          datas.forEach((item) => {
-            console.log(item);
-            item.isLoading = false;
-          });
+
           // 将获取的数据传递给data
           this.img_matter = datas;
 
@@ -150,10 +153,13 @@ export default {
 
           // 将获取的数据传递给data
           this.total = i * 10;
-
+          // 结束loading
+          this.loading = false;
           // console.log(datas, i);
         })
         .catch((err) => {
+          // 结束loading
+          this.loading = false;
           console.log(err);
         });
     },
@@ -206,20 +212,16 @@ export default {
         },
       });
     },
-    // 鼠标进入img
-    show_enter() {
-      this.is_over = true;
-    },
-    // 鼠标离开img
-    show_leave() {
-      this.is_over = false;
-    },
     // 收藏与取消收藏
     star(id, isStar) {
+      // 开启loading
+      this.loading = true;
       let user_token = localStorage.getItem("token");
       star_matter(user_token, id, { collect: !isStar })
         .then((data) => {
           // console.log(data);
+          // 关闭loading
+          this.loading = false;
           // 收藏提示
           if (!isStar) {
             this.$message({
@@ -237,6 +239,8 @@ export default {
           this.getUserMatter();
         })
         .catch((err) => {
+          // 关闭loading
+          this.loading = false;
           console.log(err);
         });
     },
