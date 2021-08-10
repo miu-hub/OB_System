@@ -563,6 +563,8 @@ export default {
           background-color: #fff;
           td {
             // width: 100px;
+            height: 80px;
+            font-weight: 700;
             text-align: center;
           }
         }
@@ -570,6 +572,7 @@ export default {
         tbody {
           width: 100%;
           border-top: 1px solid #ccc;
+
           // 状态栏样式
           .status {
             width: 120px;
@@ -579,74 +582,83 @@ export default {
             width: 500px;
             padding: 0px 20px;
           }
-
-          td {
-            height: 180px;
-            text-align: center;
-            border: 1px solid #ccc;
-
-            // 文章审核状态样式
-            .caogao,
-            .sh_loging,
-            .pass,
-            .del,
-            .sh_to {
-              width: 100px;
-              height: 40px;
-              color: #fff;
-              line-height: 40px;
-              margin-left: 10px;
-              font-weight: 700;
+          tr {
+            &:nth-child(odd) {
+              background-color: rgba(204, 204, 204, 0.26);
             }
 
-            .caogao {
-              background-color: yellow;
+            &:nth-child(even) {
+              background-color: #fff;
             }
 
-            .pass {
-              background-color: rgb(126, 241, 116);
-            }
+            td {
+              height: 180px;
+              text-align: center;
+              border: 1px solid #ccc;
 
-            .sh_loging {
-              background-color: rgb(207, 178, 46);
-            }
+              // 文章审核状态样式
+              .caogao,
+              .sh_loging,
+              .pass,
+              .del,
+              .sh_to {
+                width: 100px;
+                height: 40px;
+                color: #fff;
+                line-height: 40px;
+                margin-left: 10px;
+                font-weight: 700;
+              }
 
-            .del {
-              background-color: red;
-            }
-            .sh_to {
-              background-color: rgb(74, 35, 216);
-            }
+              .caogao {
+                background-color: yellow;
+              }
 
-            // 编辑-删除按钮样式
-            #edit_btn,
-            #del_btn {
-              width: 50px;
-              height: 50px;
-              outline: 0;
-              border: 0px;
-              color: #fff;
-              font-weight: 700;
-              border-radius: 50%;
-              cursor: pointer;
-            }
+              .pass {
+                background-color: rgb(126, 241, 116);
+              }
 
-            #edit_btn {
-              background-color: rgba(119, 204, 238, 0.3);
-            }
+              .sh_loging {
+                background-color: rgb(207, 178, 46);
+              }
 
-            #edit_btn:hover {
-              background-color: blue;
-            }
+              .del {
+                background-color: red;
+              }
+              .sh_to {
+                background-color: rgb(74, 35, 216);
+              }
 
-            #del_btn {
-              margin-left: 10px;
-              background-color: rgba(219, 49, 49, 0.3);
-            }
+              // 编辑-删除按钮样式
+              #edit_btn,
+              #del_btn {
+                width: 50px;
+                height: 50px;
+                outline: 0;
+                border: 0px;
+                color: #fff;
+                font-weight: 700;
+                border-radius: 50%;
+                cursor: pointer;
+              }
 
-            #del_btn:hover {
-              margin-left: 10px;
-              background-color: red;
+              #edit_btn {
+                background-color: rgba(119, 204, 238, 0.3);
+              }
+
+              #edit_btn:hover {
+                background-color: blue;
+              }
+
+              #del_btn {
+                margin-left: 10px;
+                background-color: rgba(219, 49, 49, 0.3);
+              }
+
+              #del_btn:hover {
+                margin-left: 10px;
+                background-color: red;
+              }
             }
           }
         }

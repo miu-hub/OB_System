@@ -194,7 +194,7 @@ export default {
         confirmButtonText: "OK",
         callback: () => {
           this.$message({
-            type: "info",
+            type: "success",
             message: `上传成功`,
           });
         },
