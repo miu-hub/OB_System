@@ -29,3 +29,16 @@ export const user_info = (token) => {
         }
     })
 }
+
+// 编辑用户信息的接口
+export const edit_user = (token, data) => {
+    return request({
+        method: 'PATCH',
+        url: "/mp/v1_0/user/profile",
+
+        headers: {
+            Authorization: `Bearer ${token}`
+        },
+        data,
+    })
+}

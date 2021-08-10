@@ -17,12 +17,18 @@ const mutations = {
     // state是state中的数据------value时调用时传入的数据
     user_token(state, value) {
         state.token = value.token;
+    },
+
+    // 将新的用户name值进行存储
+    tran(state, value) {
+        state.uname = value;
     }
 }
 
 // vuex中存储的数据
 const state = {
-    token: ''
+    token: '',
+    uname: ''
 }
 
 // 类似于计算属性
