@@ -77,7 +77,10 @@
               /><label for="auto">自动</label>
             </div>
             <!-- 封面图 -->
-            <Cover :num="info.cover.type" />
+            <!-- <Cover :num="info.cover.type" /> -->
+            <div id="img_show">
+              <Cover :num="info.cover.type" v-for="(item, i) in obj" :key="i" />
+            </div>
           </div>
           <!-- 活动区域 -->
           <div id="activity">
@@ -162,7 +165,10 @@ export default {
         channel_id: "",
 
         // img图片状态
-        cover: { type: "1", images: [] },
+        cover: {
+          type: 1,
+          images: [],
+        },
 
         // 标题
         title: "",
@@ -212,10 +218,19 @@ export default {
       this.put_article(this.$route.query.id);
     }
   },
-
+  mounted() {
+    this.$bus.$on("getImg", (url) => {
+      //  将总线的路径数据交给info的url
+      this.info.cover.images[0] = url;
+    });
+  },
+  beforeDestroy() {
+    this.$bus.$off("getImg");
+  },
   methods: {
     // 请求方法------将文章数据提交
     request(isCaoGao) {
+      // });
       // 开启禁用状态
       this.is_button = true;
       // 获取用户令牌
@@ -257,7 +272,7 @@ export default {
           // 调用发送文章的请求
           // 有三个参数------tokens即为用户令牌：用于验证-----this.info接口规定的发布文章的数据--以body形式发送
           // isCaoGao即为是否存草稿-----query传递
-          console.log(isCaoGao);
+          // console.log(isCaoGao);
           public_article(tokens, this.info, isCaoGao)
             .then((data) => {
               // 返回状态码并返回文章id
@@ -312,6 +327,17 @@ export default {
         .catch((err) => {
           console.log(err);
         });
+    },
+  },
+
+  computed: {
+    obj: {
+      get() {
+        if (this.info.cover.type <= 0) {
+          return 0;
+        }
+        return this.info.cover.type;
+      },
     },
   },
 };
@@ -437,6 +463,15 @@ export default {
               font-size: 15px;
               font-weight: 700;
             }
+          }
+
+          #img_show {
+            display: flex;
+            justify-content: left;
+            align-items: center;
+            width: 80%;
+            margin-left: 90px;
+            height: 300px;
           }
         }
         // 活动区域

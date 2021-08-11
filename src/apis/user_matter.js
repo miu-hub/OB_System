@@ -25,10 +25,10 @@ export const user_img = (token, data) => {
 export const img_matter = (token, data) => {
     return axios({
         method: 'POST',
-        url: ' /mp/v1_0/user/images',
+        url: '/mp/v1_0/user/images',
 
         headers: {
-            'Content-Type': 'multipart/form-data',
+            // 'Content-Type': 'multipart/form-data',
             Authorization: `Bearer ${token}`
         },
         data,
