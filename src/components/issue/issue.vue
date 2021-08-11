@@ -77,7 +77,7 @@
               /><label for="auto">自动</label>
             </div>
             <!-- 封面图 -->
-            <div id="img"></div>
+            <Cover :num="info.cover.type" />
           </div>
           <!-- 活动区域 -->
           <div id="activity">
@@ -115,6 +115,7 @@
 </template>
 
 <script>
+import cover from "./component/cover.vue";
 import {
   //实例
   ElementTiptap,
@@ -145,6 +146,7 @@ export default {
   // 注册el-tiptap组件接收
   components: {
     "el-tiptap": ElementTiptap,
+    Cover: cover,
   },
   data() {
     return {
@@ -435,13 +437,6 @@ export default {
               font-size: 15px;
               font-weight: 700;
             }
-          }
-          // 上传图片
-          #img {
-            width: 80%;
-            margin-left: 90px;
-            height: 300px;
-            background-color: #ccc;
           }
         }
         // 活动区域

@@ -18,11 +18,12 @@ export default {
   height: 100%;
   background-color: #000;
   background-image: url("./index_bg.jpg");
+  background-size: contain;
 
   #main {
     width: 100%;
     height: 80%;
-    background-color: #fff;
+    background-color: rgba(225, 225, 225, 0.5);
     border-radius: 10px;
     box-shadow: 10px 10px 5px #666;
     p {
