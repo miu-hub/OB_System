@@ -28,8 +28,8 @@ new Vue({
   router,
   store,
   render: h => h(App),
-  // 全局事件总线安装-----废案
-  // beforeCreate() {
-  //   Vue.prototype.$bus = this;
-  // },
+  // 全局事件总线安装
+  beforeCreate() {
+    Vue.prototype.$bus = this;
+  },
 }).$mount('#app')

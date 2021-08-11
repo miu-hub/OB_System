@@ -125,13 +125,14 @@ export default {
 
     // 修改文章评论状态
     updata_comment(id, isStatus) {
+      let pl_id = id.toString();
       // 开启按钮禁用
       this.is_btn = true;
       let tokens = localStorage.getItem("token");
       // 将评论状态取反
       let is_allow = !isStatus;
       // 调用更改评论状态的接口-----传入相应的参数
-      comment_status(tokens, { allow_comment: is_allow }, { article_id: id })
+      comment_status(tokens, { allow_comment: is_allow }, { article_id: pl_id })
         .then((data) => {
           // 弹窗
           let is = is_allow ? "开启" : "关闭";

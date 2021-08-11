@@ -42,3 +42,15 @@ export const edit_user = (token, data) => {
         data,
     })
 }
+
+// 编辑用户头像
+export const edit_userPhoto = (token, data) => {
+    return request({
+        method: 'PATCH',
+        url: '/mp/v1_0/user/photo',
+        headers: {
+            Authorization: `Bearer ${token}`
+        },
+        data,
+    })
+}

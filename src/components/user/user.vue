@@ -67,7 +67,11 @@
           <!-- 用户头像编辑区 -->
           <div id="user_img">
             <!-- 用户头像 -->
-            <img :src="userInfo.photo" alt="用户头像" />
+            <img
+              :src="userInfo.photo"
+              style="border-radius: 5%"
+              alt="用户头像"
+            />
             <label for="files">修改头像</label>
             <input
               id="files"
@@ -84,17 +88,17 @@
           title="编辑头像"
           :visible.sync="dialogVisible"
           :append-to-body="true"
-          width="30%"
+          @opened="open_end"
         >
           <!-- 预览图片设置 -->
-          <img
-            :src="pre_img"
-            style="width: 90%; height: 300px; margin-left: 50px"
-          />
+          <!-- 根据要求详细配置 -->
+          <div id="img_pre">
+            <img :src="pre_img" style="height: 300px" ref="img_p" />
+          </div>
           <span slot="footer" class="dialog-footer">
             <el-button @click="dialogVisible = false">取 消</el-button>
-            <el-button type="primary" @click="dialogVisible = false"
-              >确 定</el-button
+            <el-button :disabled="is_commit" type="primary" @click="on_commit"
+              >提 交</el-button
             >
           </span>
         </el-dialog>
@@ -104,7 +108,9 @@
 </template>
 
 <script>
-import { user_info, edit_user } from "../../apis/user";
+import "cropperjs/dist/cropper.css";
+import Cropper from "cropperjs";
+import { user_info, edit_user, edit_userPhoto } from "../../apis/user";
 export default {
   name: "user",
   data() {
@@ -115,6 +121,11 @@ export default {
       dialogVisible: false,
       // 预览图片路径
       pre_img: "",
+      // 控制cropper是否被销毁
+      cropper: null,
+
+      // 控制弹窗提交头像按钮是否禁用
+      is_commit: false,
     };
   },
   created() {
@@ -184,11 +195,81 @@ export default {
       const img_url = window.URL.createObjectURL(img_dom);
       // 将图片路径传递给预览渲染模块
       this.pre_img = img_url;
-      console.log(img_url);
+
       // 解决选择图片相同时不触发事件
       this.$refs.files.value = "";
       // 展示图片预览区
       this.dialogVisible = true;
+    },
+
+    // 当页面弹出框完成时调用这个方法初始裁剪框
+    open_end() {
+      const img = this.$refs.img_p;
+      // console.log(img);
+      // blob: //192.168.1.3:8080/ada01cd1-7679-47dd-896b-e77f5ae29b9c
+      // 替换其中的预览图片地址，防止选择不同的图片时预览图片不发生改变
+      // http:
+      if (this.cropper) {
+        this.cropper.replace(this.pre_img);
+        return;
+      }
+      this.cropper = new Cropper(img, {
+        aspectRatio: 1,
+        viewMode: 1,
+        crop: function (e) {
+          // console.log(e.detail.x);
+          // console.log(e.detail.y);
+          // console.log(e.detail.width);
+          // console.log(e.detail.height);
+          // console.log(e.detail.rotate);
+          // console.log(e.detail.scaleX);
+          // console.log(e.detail.scaleY);
+        },
+      });
+    },
+
+    // 提交头像图片
+    on_commit() {
+      // 禁用------提交按钮
+      this.is_commit = true;
+      // 调用获取裁剪后头像的方法
+      this.cropper.getCroppedCanvas().toBlob((bold) => {
+        // console.log(bold);
+        // 将获取到的的头像文件利用FormData处理
+        const fd = new FormData();
+        // 在fd对象中添加photo属性---完成接口要求的参数
+        fd.append("photo", bold);
+        // 用户令牌
+        let tokens = localStorage.getItem("token");
+        // 调用编辑用户头像的请求方法
+        edit_userPhoto(tokens, fd)
+          .then((data) => {
+            // 关闭弹窗
+            this.dialogVisible = false;
+            // 关闭禁用----提交按钮
+            this.is_commit = false;
+            // 提示信息
+            this.$message({
+              type: "success",
+              message: "修改头像成功!",
+            });
+            // 使用$emit触发$bus上的su事件，并传递数据
+            this.$bus.$emit("updata_user");
+            // 更新此页面信息
+            this.getUserInfo();
+          })
+          .catch((err) => {
+            // 关闭弹窗
+            this.dialogVisible = false;
+            // 关闭禁用----提交按钮
+            this.is_commit = false;
+            // 提示信息
+            this.$message({
+              type: "warring",
+              message: "修改头像失败!",
+            });
+          });
+      });
     },
   },
   // 计算属性
@@ -221,6 +302,17 @@ export default {
   justify-content: center;
   background-color: #ccc;
   padding-top: 20px;
+
+  #img_pre {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    img {
+      display: block;
+      max-width: 100%;
+    }
+  }
+
   #user_main {
     width: 90%;
     height: 800px;
@@ -409,6 +501,10 @@ export default {
             text-align: center;
             height: 20px;
             transform: translateX(-50%);
+          }
+
+          label:hover {
+            color: red;
           }
         }
       }

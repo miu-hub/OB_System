@@ -161,6 +161,21 @@ export default {
     this.getUserInfo();
     // this.$router.push("/");
   },
+  //   在虚拟Dom编译之后来使用总线获取数据
+  mounted() {
+    //   this.$bus总线
+    // 为总线绑定一个事件su，并接受回调函数返回参数data
+    this.$bus.$on("updata_user", () => {
+      //  当个人设置触发提交数据的全局总线上的方法时会触发这里的更新请求
+      this.getUserInfo();
+    });
+  },
+
+  //   在vue实例销毁之前将$bus上的绑定事件销毁
+  // 注意：千万不要什么都不写，，这要会销毁$bus上的所有事件
+  beforeDestroy() {
+    this.$bus.$off("updata_user");
+  },
 
   methods: {
     // 鼠标点击路由导航
@@ -220,9 +235,6 @@ export default {
         this.$router.push("/login");
       }, 3000);
     },
-
-    // 用户点击功能
-    user_facility() {},
 
     //折叠导航栏
     fold() {
