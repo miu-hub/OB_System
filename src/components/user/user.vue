@@ -5,7 +5,7 @@
       <!-- 面包屑模块 -->
       <div id="crumbs">
         <ul id="crumbs_nav">
-          <li>首页</li>
+          <li><router-link to="/">首页</router-link></li>
           <span>></span>
           <li>素材管理</li>
         </ul>

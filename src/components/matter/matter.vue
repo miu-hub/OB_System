@@ -28,7 +28,7 @@
           <div id="coll_r">
             <el-upload
               class="upload-demo"
-              action="http://ttapi.research.itcast.cn/mp/v1_0/user/images"
+              action="http://api-toutiao-web.itheima.net/mp/v1_0/user/images"
               :headers="onheader"
               name="image"
               :on-success="success"
@@ -96,10 +96,11 @@
 
 <script>
 import { get_matter, star_matter, del_matter } from "../../apis/user_matter";
+import { updata_token } from "../../apis/user";
 export default {
   name: "matter",
   data() {
-    let user_token = localStorage.getItem("token");
+    let user_token = window.localStorage.getItem("token");
     return {
       // 接收请求返回的响应数据（图片素材）
       img_matter: [],
@@ -115,7 +116,6 @@ export default {
       page: 1,
       // 配置请求头
       onheader: {
-        "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${user_token}`,
       },
     };
@@ -156,6 +156,10 @@ export default {
           // 结束loading
           this.loading = false;
           // console.log(datas, i);
+          // 刷新用户token
+          // updata_token(tokens).then((data) => {
+          //   console.log(data);
+          // });
         })
         .catch((err) => {
           // 结束loading
@@ -202,7 +206,7 @@ export default {
     },
     // 上传失败
     err() {
-      this.$alert("上传图片失败", "不知名失败", {
+      this.$alert("上传图片失败", "上传接口限制", {
         confirmButtonText: "OK",
         callback: () => {
           this.$message({
@@ -260,7 +264,7 @@ export default {
         .catch((err) => {
           this.$message({
             type: "warning",
-            message: "删除失败",
+            message: "删除失败---接口权限不足",
           });
           console.log(err);
         });

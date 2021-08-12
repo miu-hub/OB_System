@@ -7,6 +7,7 @@
         <!-- 可以实现跳转的导航栏 -->
         <ul>
           <li><router-link to="/">首页</router-link></li>
+          <li>内容管理</li>
         </ul>
       </div>
 

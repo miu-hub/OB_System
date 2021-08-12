@@ -54,3 +54,14 @@ export const edit_userPhoto = (token, data) => {
         data,
     })
 }
+
+// 刷新用户token接口
+export const updata_token = (token) => {
+    return request({
+        method: 'PUT',
+        url: '/mp/v1_0/authorizations',
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
+}

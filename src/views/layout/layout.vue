@@ -97,7 +97,7 @@ export default {
       // text----展示的文字内容
       // isclick----决定点击后li的样式
       rout: [
-        { to: "", class_icon: "shouye", text: "首页", isclick: true },
+        { to: "", class_icon: "shouye", text: "首页", isclick: false },
         {
           to: "conest",
           class_icon: "rizhimingxi",
@@ -163,6 +163,14 @@ export default {
   },
   //   在虚拟Dom编译之后来使用总线获取数据
   mounted() {
+    // 组件刷新时触发路径校验-----刷新页面导航栏仍有停留样式
+    let path = this.$route.path.substring(1);
+    this.rout.forEach((item, i) => {
+      if (item.to == path) {
+        // 让该路径下的组件显示被点击样式
+        item.isclick = true;
+      }
+    });
     //   this.$bus总线
     // 为总线绑定一个事件su，并接受回调函数返回参数data
     this.$bus.$on("updata_user", () => {

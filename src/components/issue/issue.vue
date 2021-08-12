@@ -6,7 +6,7 @@
       <!-- 面包屑模块 -->
       <div id="crumbs">
         <ul id="crumbs_nav">
-          <li>首页</li>
+          <li><router-link to="/">首页</router-link></li>
           <span>></span>
           <li>发布文章</li>
         </ul>
@@ -225,12 +225,12 @@ export default {
     });
   },
   beforeDestroy() {
+    // 组件销毁前解绑事件
     this.$bus.$off("getImg");
   },
   methods: {
     // 请求方法------将文章数据提交
     request(isCaoGao) {
-      // });
       // 开启禁用状态
       this.is_button = true;
       // 获取用户令牌
@@ -239,16 +239,8 @@ export default {
       // 数据长度-----去除空格
       let title_length = this.info.title.trim().length;
       let content_length = this.info.content.trim().length;
-      // let cover_length = this.info.cover.type.trim().length;
-      // let id_length = this.info.channel_id;
       // 判断数据长度是否符合规范
-      if (
-        title_length >= 5 &&
-        title_length <= 30 &&
-        content_length > 0
-        // cover_length > 0 &&
-        // id_length > 0
-      ) {
+      if (title_length >= 5 && title_length <= 30 && content_length > 0) {
         // 修改的请求情况下
         if (this.$route.query.id) {
           let id = this.$route.query.id;
@@ -262,7 +254,7 @@ export default {
               this.$router.push("/conest");
             })
             .catch((err) => {
-              console.log(err);
+              // console.log(err);
               // 关闭禁用状态
               this.is_button = false;
             });
@@ -272,7 +264,6 @@ export default {
           // 调用发送文章的请求
           // 有三个参数------tokens即为用户令牌：用于验证-----this.info接口规定的发布文章的数据--以body形式发送
           // isCaoGao即为是否存草稿-----query传递
-          // console.log(isCaoGao);
           public_article(tokens, this.info, isCaoGao)
             .then((data) => {
               // 返回状态码并返回文章id
@@ -333,7 +324,7 @@ export default {
   computed: {
     obj: {
       get() {
-        if (this.info.cover.type <= 0) {
+        if (this.info.cover.type <= 0 && this.info.cover.type == 3) {
           return 0;
         }
         return this.info.cover.type;

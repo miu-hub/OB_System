@@ -3,6 +3,8 @@
 //  */
 import axios from 'axios'
 
+import router from '../router/router'
+
 // 引入json—bigint
 import bigInt from 'json-bigint'
 // // 创建一个axios实例
@@ -44,6 +46,24 @@ request.interceptors.request.use(
     // 失败的请求会经过这个方法
     (err) => {
         return err;
-    });
+    }
+);
 
+
+// 响应拦截器
+request.interceptors.response.use(
+
+    function (res) {
+        return res;
+    },
+    function (err) {
+        // // 防止用户伪造令牌
+        // if (err.response && err.response.status == 401) {
+        //     // 跳转到首页
+        //     localStorage.removeItem('token')
+        //     routr.push('/');
+        // }
+        return Promise.reject(err)
+    }
+)
 export default request;
