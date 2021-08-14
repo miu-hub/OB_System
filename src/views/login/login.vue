@@ -70,7 +70,6 @@ export default {
         // 验证码
         code: "246810",
       },
-
       // 状态信息
       // 协议选中状态
       isCheck_deal: false,
@@ -128,7 +127,6 @@ export default {
             })
             // 失败回调
             .catch((err) => {
-              console.log("请求失败了" + err);
               // 提示失败登录状态
               this.islogin_n = true;
               // 提示失败按钮状态
